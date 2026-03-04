@@ -1,12 +1,15 @@
-TRUNCATE TABLE operations RESTART IDENTITY;
-TRUNCATE TABLE contracts  RESTART IDENTITY;
-TRUNCATE TABLE accounts   RESTART IDENTITY;
-TRUNCATE TABLE clients    RESTART IDENTITY;
+BEGIN;
 
-TRUNCATE TABLE contract_type_dict   RESTART IDENTITY;
-TRUNCATE TABLE contract_status_dict RESTART IDENTITY;
-TRUNCATE TABLE client_status_dict   RESTART IDENTITY;
-TRUNCATE TABLE currency_dict        RESTART IDENTITY;
+TRUNCATE TABLE
+  operations,
+  contracts,
+  accounts,
+  clients,
+  currency_dict,
+  contract_type_dict,
+  contract_status_dict,
+  client_status_dict
+RESTART IDENTITY CASCADE;
 
 -- 1) Dictionaries
 INSERT INTO client_status_dict (client_status_id, code, name, is_terminal) VALUES
@@ -30,7 +33,7 @@ INSERT INTO currency_dict (currency_id, code, name, is_active) VALUES
   (3, 'UAH', 'Hryvnia',     true);
 
 -- 2) Clients (explicit IDs for reproducibility)
-INSERT INTO clients (client_id, name, status_client_id, created_at, updated_at) VALUES
+INSERT INTO clients (client_id, name, client_status_id, created_at, updated_at) VALUES
   (1001, 'Alice', 1, now() - interval '60 days', now() - interval '1 day'),
   (1002, 'Bob',   1, now() - interval '40 days', now() - interval '2 days'),
   (1003, 'Carol', 2, now() - interval '90 days', now() - interval '10 days');
@@ -90,7 +93,7 @@ INSERT INTO operations (operation_id, account_id, currency_id, amount, direction
   (30011, 50002, 1, 4500.00, 2, (current_date - 20) + time '09:00'),
   (30012, 50001, 1, 3200.00, 1, (current_date - 25) + time '17:10');
 
--- Bob: some ops but should not qualify for Tab1 because he lacks deposit
+-- Bob: some ops but should not qualify for Task1 because he lacks deposit
 INSERT INTO operations (operation_id, account_id, currency_id, amount, direction, created_at) VALUES
   (30101, 50003, 1, 9000.00, 2, (current_date - 3) + time '10:00'),
   (30102, 50003, 1, 1000.00, 1, (current_date - 2) + time '10:00');
