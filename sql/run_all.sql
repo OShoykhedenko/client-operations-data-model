@@ -2,3 +2,4 @@
 \i sql/01_indexes.sql
 \i sql/10_seed.sql
 \i sql/20_task1.sql
+\i sql/21_task2.sql
